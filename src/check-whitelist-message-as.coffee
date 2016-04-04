@@ -7,9 +7,10 @@ class CheckWhitelistMessageAs
 
   do: (job, callback) =>
     {fromUuid, toUuid, responseId, auth} = job.metadata
-    fromUuid ?= auth.uuid
+    fromUuid ?= auth.as
     emitter = fromUuid
     subscriber = toUuid
+    return @sendResponse responseId, 403, callback unless fromUuid == auth.as
     @whitelistManager.checkMessageAs {emitter, subscriber}, (error, verified) =>
       return @sendResponse responseId, 500, callback if error?
       return @sendResponse responseId, 403, callback unless verified
